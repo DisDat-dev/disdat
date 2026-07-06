@@ -51,9 +51,17 @@ If you save any captured material as-is (shader source, CSS, assets, markup), pu
 that it is another site's work, kept **for study only**. Never place verbatim copies into the user's
 product source tree.
 
-### 2. Decompose it into a NODE GRAPH
-Study the captured layers and write the thing up as a graph of named, editable **knobs** — the way its own
-developer would think about it. The capture gives you the REAL values, so this is analysis, not guessing:
+### 2. Template it into a NODE GRAPH — starting FROM the real files
+**Never observe-and-recreate from scratch.** Rebuilding "something like it" from memory is a police sketch —
+it loses exactly the detail that made it good. Instead, start FROM the captured source and *stretch each
+layer out into a node* whose parameters become UI-like controls:
+
+- a number becomes a **slider** — and you infer its meaningful range from the source, not just its value
+- an enumerable choice becomes a **dropdown** (blend modes, easing families, layout variants)
+- a set of alternatives becomes **multiple-choice**
+- an asset becomes **same-style image alternatives** (regenerated, never reused)
+
+The capture gives you the REAL values, so this is transformation, not guessing:
 
 - **Layer stack** — enumerate every layer and how they composite: background image → gradient → WebGL
   morph shader → grain overlay → blend modes. There are usually MORE layers than it first appears; find
@@ -73,6 +81,11 @@ same finesse. **Never dumb it down** into a cheap approximation just because a s
 The output is a *permutation at the original's level of craft*, not a copy: new values through the same
 graph. The structure/technique is what was learned; every concrete value should be the user's.
 
+**Learn the technique class, not the instance.** Don't learn "this red-velvet sponge" — learn *sponge*:
+every consistency, air content, absorption, fluffiness the technique supports. After studying one page's
+5-layer WebGL background you should be able to produce ANY background at that level of craft, with this
+one as merely the first permutation.
+
 ### 4. Regenerate creative assets — never reuse them
 Verbatim creative assets (photos, illustrations, figurines, logos, fonts without a license, copy text) are
 **not fair game to ship**. Instead:
@@ -83,7 +96,12 @@ Verbatim creative assets (photos, illustrations, figurines, logos, fonts without
   want used** if none is configured.
 - Same for Lottie/animation assets: learn the motion character and rebuild it.
 
-### 5. Report the graph to the user
+### 5. Acknowledge the paste, then report the graph
+The moment a capture lands, tell the user in one line what you're doing — e.g. *"Got it — I can see the
+real thing. I won't ship a copy: quarantining it as a reference, templating it into knobs, then building
+your version at the same depth."* Then, while building:
+
+### Report the graph to the user
 Tell them what you learned before or while building: *"Behind this section: N layers — A (knobs: …),
 B (knobs: …), C. Here's your on-brand permutation, and here are the knobs you can now turn."* The user
 should come away able to art-direct the thing — that's the product: **they gain the developer's skill,

@@ -1,4 +1,4 @@
-# Dis Dat — agent skill
+# Skillify any webpage — the Dis Dat skill
 
 The [Dis Dat](https://disdat.dev) capture skill for AI coding agents. Teaches your agent to consume a
 Dis Dat capture (a recorded reaction to a live web page + re-hosted artifact bundle) and make grounded
@@ -15,17 +15,21 @@ Works with Claude Code, Cursor, GitHub Copilot, Cline and 18+ agents (via [skill
 Or install manually — tell your agent: *"Fetch https://api.disdat.dev/skill.md and save it as my Dis Dat
 skill."*
 
-## Headless capture included
+## Skillify any webpage
 
-The skill bundles a capture script — your agent can study any URL by itself, on your machine:
+Tell your agent **"skillify https://site-you-love.com"** — it captures the page's real design layers
+on your machine (authored CSS incl. hover states, exact rects, animation curves, WebGL shaders — not
+a screenshot, not scraped text), then hands you the design as **knobs**: every node named, its current
+value, its meaningful range, and a multiple-choice taste menu. You art-direct by answering questions —
+*"springy overshoot, softer, snappier, or editorial-flat?"* — and it rebuilds at that level, in YOUR
+brand. You don't get a copy of their page; you get the skill of the developer who built it.
 
 ```bash
-node skills/disdat/scripts/capture.mjs https://example.com --select ".hero" --sources
+node skills/disdat/scripts/skillify.mjs https://example.com --select ".hero" --sources
 ```
 
-Real layers out: computed **and authored** CSS (incl. pseudo rules), exact rects, animations, WebGL
-shaders/uniforms, DOM outline, screenshots, first-party sources. No account, nothing uploaded.
-For **human** captures — your voice + pointing, across pages — get [the extension](https://disdat.dev).
+No account, nothing uploaded. For **human** captures — your voice + your cursor, across pages,
+behind logins — get [the extension](https://disdat.dev) (30 free min).
 
 ## Use
 

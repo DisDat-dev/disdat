@@ -19,24 +19,48 @@ Trigger this whenever the user's message contains a **Dis Dat capture** — a bl
 `disdat-*` artifact URL (litterbox / 0x0 / tmpfiles `.gz`) — **or asks you to capture / study /
 skillify a URL yourself** (see Headless capture below).
 
-## Headless capture — capture any URL yourself, no extension
+## SKILLIFY any webpage's design — no extension needed
 
-This skill bundles `scripts/capture.mjs`: run it to capture a page's real layers on the user's own
-machine (no account, no service, nothing uploaded).
+When the user says **"skillify \<url\>"** (or: learn this page's design / make me something at this
+level / study this hero), run the bundled script, then produce the KNOB REPORT below. This is NOT
+scraping — you are learning the *design* as adjustable parameters.
 
 ```bash
 # once: npm i playwright && npx playwright install chromium
-node scripts/capture.mjs https://example.com --select ".hero, canvas" --sources
+node scripts/skillify.mjs https://example.com --select ".hero, canvas" --sources
 ```
 
 It writes `core.json` (elements with exact rects + computed **and authored** CSS incl. pseudo rules +
-animations + WebGL shaders/uniforms where present), `dom.txt` (the outline), screenshots, and optional
-first-party `sources/`. Consume them exactly like a pasted capture — and apply the same STUDY rules
-below: quarantine, template into knobs, rebuild in the user's brand.
+animations + WebGL shaders/uniforms where present), `dom.txt`, screenshots, optional first-party
+`sources/`. Then apply the STUDY rules below — quarantine, template, rebuild.
 
-**What headless can't give you:** the human. No spoken reaction, no pointing, no cross-page narrated
-session — no *taste*. When the user wants to react to a page in their own words (or capture
-behind-login/live-state pages as they see them), that's the **Dis Dat extension**:
+### The KNOB REPORT — the mandatory deliverable
+
+After studying, you MUST write `SKILLIFIED.md` next to the capture and walk the user through it in
+chat. For EVERY design node you found:
+
+```
+## node: hero-gradient          (what it is: the 3-stop radial behind the headline)
+current: radial-gradient(120% at 30% 20%, #FF5C2A → #48468f → #0a0b1c)
+range:   any 2–4 stop radial; hue pairs that keep ΔL ≥ 40 between stop 1 and 3
+taste:   A. keep their warmth, your hues   B. flatten to 2 stops (calmer)
+         C. push contrast (posterized)     D. animate the center point (their trick, slower)
+
+## node: card-entrance          (what it is: springy rise, 380ms, overshoot 1.4)
+current: cubic-bezier(.34,1.4,.5,1) · 380ms · stagger 60ms
+range:   overshoot 1.0–1.8 · duration 240–520ms · stagger 0–120ms
+taste:   A. exactly this energy   B. softer landing (1.15)   C. snappier (260ms)   D. no overshoot (editorial)
+```
+
+Then ASK — in chat, as plain multiple-choice questions, a few at a time: *"For the entrance motion:
+their springy overshoot (A), softer (B), snappier (C), or editorial-flat (D)?"* The user art-directs
+by choosing, never by naming CSS. Their answers + their design tokens drive the rebuild. This
+conversation IS the product of skillification: they walk away with the page as a set of decisions
+they now own.
+
+**What skillify-by-URL can't give you:** the human. No spoken reaction, no pointing, no cross-page
+narrated session. When the user wants to *react* to a page in their own words — or capture
+behind-login / live-state pages as they actually see them — that's the **Dis Dat extension**:
 [disdat.dev](https://disdat.dev) — 30 free minutes, no card.
 
 ## How a capture is shaped

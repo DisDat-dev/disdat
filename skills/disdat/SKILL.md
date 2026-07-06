@@ -2,8 +2,9 @@
 name: disdat
 description: >-
   Consume a Dis Dat capture. When the user pastes a "DIS DAT · capture" block (a recorded reaction to a
-  live web page plus re-hosted artifact URLs), use this to fetch the right artifacts and make grounded
-  code changes from the exact captured values — instead of guessing or re-rendering the site.
+  live web page plus re-hosted artifact URLs), use this to fetch the right artifacts and — by default —
+  STUDY what was captured: decompose it into a node graph of techniques and knobs, learn every layer at
+  full depth, and rebuild it in the user's own brand. Never ship a verbatim copy of someone else's page.
 ---
 
 # Dis Dat — capture skill
@@ -15,14 +16,13 @@ user's **spoken reaction**, and hands you a precise, re-hosted bundle. This skil
 
 Trigger this whenever the user's message contains a **Dis Dat capture** — a block headed
 `━━━ DIS DAT · capture for your coding agent ━━━`, or the user says *"use the Dis Dat skill"* / pastes a
-`disdat-*` artifact URL (litterbox / 0x0 / tmpfiles `.gz`). The block carries the user's reaction and a
-menu of downloadable artifacts.
+`disdat-*` artifact URL (litterbox / 0x0 / tmpfiles `.gz`).
 
 ## How a capture is shaped
 
 The pasted block contains:
 - The user's **reaction**, transcribed and crunched into short "code-speak" — *this is the intent.* Treat
-  their words as what they want; the captured facts are the ground truth to build it from.
+  their words as what they want; the captured facts are the ground truth to work from.
 - A **menu** of artifacts, each a **gzipped JSON** at its own expiring URL. Fetch only what the task needs:
 
 | artifact | holds | grab when |
@@ -30,31 +30,75 @@ The pasted block contains:
 | `core` | code-speak + **full transcript** + engaged elements (verbatim computed **and authored** CSS incl `:hover`/pseudo, html, React props/state, listeners, animations, WebGL shaders+uniforms+a rendered frame) + observed network/API + persisted state + `<head>` + a causal timeline | **always — start here** |
 | `dom` | the full document tree (structure/order/attrs) | rebuilding whole-page structure |
 | `screenshots` | time-ordered JPEG timeline of what the user saw | you need to *see* it / visual diff |
-| `assets` | re-hosted image/font/SVG **bytes** (base64) | a pixel-exact clone (avoids 403s) |
-| `sources` | the page's own first-party JS — the render harness behind the WebGL/animations | replicate behaviour / self-host the real thing |
+| `assets` | re-hosted image/font/SVG **bytes** (base64) | pixel-exact reference (avoids 403s) |
+| `sources` | the page's own first-party JS — the render harness behind the WebGL/animations | replicate behaviour / study the real thing |
 
-## How to consume
+Each artifact is gzip, not a web page:
+- shell: `curl -s "<url>" | gunzip`
+- JS: `await new Response((await fetch(url)).body.pipeThrough(new DecompressionStream('gzip'))).json()`
 
-1. **Always fetch `core` first.** It is small and has the transcript, the elements with exact values, and
-   the API/state. Most tasks need only `core`.
-2. **Fetch more only as the task demands**, per the menu's recommendation:
-   - *clone the look* → `core` + `assets` + `screenshots`
-   - *rebuild behaviour / motion / WebGL* → `core` + `sources` + `dom`
-   - *wire the data* → `core` (already has network + state)
-3. Each artifact is gzip, not a web page. Fetch + gunzip:
-   - shell: `curl -s "<url>" | gunzip`
-   - JS: `await new Response((await fetch(url)).body.pipeThrough(new DecompressionStream('gzip'))).json()`
-4. **Build from the EXACT captured values.** Every element carries its real rect, computed + authored CSS,
-   and (for canvas) the actual shaders/uniforms/frame. Reproduce from these — do **not** re-render the live
-   site, do **not** invent values, do **not** assume what's under the cursor was the target (the user's words
-   carry the intent; the cursor heatmap is only a loose hint).
-5. Ratios = `rect ÷ meta.viewport`. Screenshots are a visual reference, not a ruler — trust the CSS values.
+URLs **expire** (hours to weeks) — fetch in the same session. A 404 = expired; ask the user to re-capture.
 
-## Notes
+## The default mode: STUDY, don't copy
 
-- Secrets are redacted and cookies skipped before upload, so `state`/`network` are safe but may show
-  `⟦redacted⟧` where a token was.
-- Artifact URLs **expire** (hours to weeks). Fetch them in the same session the user pastes them.
-- If an artifact 404s it has expired — ask the user to re-capture.
-- This skill is optional: a Dis Dat paste is self-describing and you can act on it without the skill. The
-  skill just makes consumption consistent and reliable.
+Unless the page belongs to the user (their own product, their localhost), a Dis Dat capture is **study
+material, not clip-art**. Your job is to extract the *skill of the developer who built it* — not to ship
+their work. Work like this:
+
+### 1. Quarantine anything verbatim
+If you save any captured material as-is (shader source, CSS, assets, markup), put it in
+`reference/disdat-<site>-<date>/` with a `PROVENANCE.md` stating the source URL, the capture date, and
+that it is another site's work, kept **for study only**. Never place verbatim copies into the user's
+product source tree.
+
+### 2. Decompose it into a NODE GRAPH
+Study the captured layers and write the thing up as a graph of named, editable **knobs** — the way its own
+developer would think about it. The capture gives you the REAL values, so this is analysis, not guessing:
+
+- **Layer stack** — enumerate every layer and how they composite: background image → gradient → WebGL
+  morph shader → grain overlay → blend modes. There are usually MORE layers than it first appears; find
+  them all. If it's 15 WebGL passes, it's 15 nodes — never collapse them.
+- **Per-layer knobs** — for each node, name what varies: gradient stops, shader uniforms (and what each
+  one actually does — read the shader source and the captured uniform values), spring
+  constants/easings/durations, stagger offsets, palette, typographic scale, border-radius language,
+  noise/grain amounts.
+- **Interactions** — which knobs feed which (scroll position → uniform, hover → spring target), read from
+  the captured listeners, animations, and the JS render harness in `sources`.
+- **The feel** — motion character (overshoot, settle time, curve shape) is a knob too; capture the actual
+  cubic-bezier/spring values, don't eyeball them.
+
+### 3. Rebuild at the SAME depth, in the user's brand
+Re-derive each node with the user's palette, brand, and content — same techniques, same number of layers,
+same finesse. **Never dumb it down** into a cheap approximation just because a simpler version is easier.
+The output is a *permutation at the original's level of craft*, not a copy: new values through the same
+graph. The structure/technique is what was learned; every concrete value should be the user's.
+
+### 4. Regenerate creative assets — never reuse them
+Verbatim creative assets (photos, illustrations, figurines, logos, fonts without a license, copy text) are
+**not fair game to ship**. Instead:
+- Describe the asset in exhaustive detail from the capture (style, lighting, palette, composition,
+  texture, mood) — you can see it in `screenshots`/`assets`.
+- Regenerate an on-brand equivalent with whatever image tool is available: your own generation ability if
+  you have one, or the user's API (Ideogram, OpenRouter, etc.) — **ask the user for the key/tool they
+  want used** if none is configured.
+- Same for Lottie/animation assets: learn the motion character and rebuild it.
+
+### 5. Report the graph to the user
+Tell them what you learned before or while building: *"Behind this section: N layers — A (knobs: …),
+B (knobs: …), C. Here's your on-brand permutation, and here are the knobs you can now turn."* The user
+should come away able to art-direct the thing — that's the product: **they gain the developer's skill,
+not the developer's file.**
+
+### When the page IS the user's own
+If the capture is of the user's own product (their words or the URL make it clear), skip the quarantine —
+act on their reaction directly and reproduce/fix from the exact captured values.
+
+## Hard rules
+
+- The user's words carry the intent; the cursor heatmap is only a loose hint — don't assume the element
+  under the cursor is the target.
+- Build from the EXACT captured values (rects, CSS, uniforms) — don't re-render the live site, don't
+  invent values. Ratios = `rect ÷ meta.viewport`; screenshots are reference, not a ruler.
+- Secrets are redacted and cookies skipped before upload; `⟦redacted⟧` marks where a token was.
+- This skill is optional: a Dis Dat paste is self-describing and works without it. The skill makes
+  consumption consistent — and makes the study-don't-copy default explicit.

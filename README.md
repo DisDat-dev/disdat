@@ -21,5 +21,3 @@ Record with the Dis Dat extension, paste the capture at your agent, and say **"u
 The skill is optional — a Dis Dat paste is self-describing — it just makes consumption consistent.
 
 The skill lives in [`skills/disdat/SKILL.md`](skills/disdat/SKILL.md).
-
-The extension itself is open source too: [DisDat-dev/extension](https://github.com/DisDat-dev/extension) — run it hosted or entirely on your own keys.

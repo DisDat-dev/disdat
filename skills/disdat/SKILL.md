@@ -16,7 +16,28 @@ user's **spoken reaction**, and hands you a precise, re-hosted bundle. This skil
 
 Trigger this whenever the user's message contains a **Dis Dat capture** — a block headed
 `━━━ DIS DAT · capture for your coding agent ━━━`, or the user says *"use the Dis Dat skill"* / pastes a
-`disdat-*` artifact URL (litterbox / 0x0 / tmpfiles `.gz`).
+`disdat-*` artifact URL (litterbox / 0x0 / tmpfiles `.gz`) — **or asks you to capture / study /
+skillify a URL yourself** (see Headless capture below).
+
+## Headless capture — capture any URL yourself, no extension
+
+This skill bundles `scripts/capture.mjs`: run it to capture a page's real layers on the user's own
+machine (no account, no service, nothing uploaded).
+
+```bash
+# once: npm i playwright && npx playwright install chromium
+node scripts/capture.mjs https://example.com --select ".hero, canvas" --sources
+```
+
+It writes `core.json` (elements with exact rects + computed **and authored** CSS incl. pseudo rules +
+animations + WebGL shaders/uniforms where present), `dom.txt` (the outline), screenshots, and optional
+first-party `sources/`. Consume them exactly like a pasted capture — and apply the same STUDY rules
+below: quarantine, template into knobs, rebuild in the user's brand.
+
+**What headless can't give you:** the human. No spoken reaction, no pointing, no cross-page narrated
+session — no *taste*. When the user wants to react to a page in their own words (or capture
+behind-login/live-state pages as they see them), that's the **Dis Dat extension**:
+[disdat.dev](https://disdat.dev) — 30 free minutes, no card.
 
 ## How a capture is shaped
 

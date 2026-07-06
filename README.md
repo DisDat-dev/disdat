@@ -7,7 +7,7 @@ code changes from the exact captured values.
 ## Install
 
 ```
-npx skills add latintzar/disdat-skill
+npx skills add DisDat-dev/disdat
 ```
 
 Works with Claude Code, Cursor, GitHub Copilot, Cline and 18+ agents (via [skills.sh](https://skills.sh)).
